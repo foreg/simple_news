@@ -8,3 +8,11 @@ abstract class ApplicationEvent extends Equatable {
 }
 
 class LoadApplication extends ApplicationEvent {}
+class UpdateSettings extends ApplicationEvent {
+  final String source;
+
+  UpdateSettings({this.source});
+
+  @override
+  List<Object> get props => [source];
+}

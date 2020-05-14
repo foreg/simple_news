@@ -9,9 +9,10 @@ class News extends Equatable {
   final String url;
   final String byline;
   final String thumbnailStandard;
+  final String source;
 
   News(this.slugName, this.section, this.title, this.shortDescription, this.url,
-      this.byline, this.thumbnailStandard);
+      this.byline, this.thumbnailStandard, this.source);
 
   factory News.fromJson(Map<String, dynamic> json) {
     return News(
@@ -22,6 +23,7 @@ class News extends Equatable {
       json['url'] ?? "https://www.nytimes.com/",
       json['byline'] ?? "Untitled",
       json['thumbnail_standard'] ?? 'http://via.placeholder.com/75x75',
+      json['source'] ?? 'New York Times',
     );
   }
 

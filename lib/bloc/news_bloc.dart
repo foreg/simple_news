@@ -21,19 +21,21 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     if (event is Fetch) {
       try {
         if (currentState is NewsInitial) {
-        final news = await newsRepository.getNews(limit: 20, offset: 0);
+        final news = await newsRepository.getNews(limit: 20, offset: 0, source: event.source);
         yield NewsLoaded(news: news);
       }
       else if (currentState is NewsLoaded) {
-        final news = await newsRepository.getNews(limit: 20, offset: currentState.news.length);
+        final news = await newsRepository.getNews(limit: 20, offset: currentState.news.length, source: event.source);
         news.removeWhere((element) => currentState.news.contains(element));
         yield NewsLoaded(news: currentState.news + news);
       }
       }
       catch (_) {
         yield NewsError();
-      }
-      
+      }      
+    }
+    else if (event is Clear) {
+      yield NewsInitial();
     }
   }
 }

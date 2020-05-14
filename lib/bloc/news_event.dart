@@ -7,4 +7,13 @@ abstract class NewsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class Fetch extends NewsEvent {}
+class Fetch extends NewsEvent {
+  final String source;
+
+  Fetch({this.source});
+
+  @override
+  List<Object> get props => [source];
+}
+
+class Clear extends NewsEvent {}

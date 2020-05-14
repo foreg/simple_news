@@ -5,26 +5,42 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:simple_news/bloc/news_bloc.dart';
 
-import 'package:simple_news/main.dart';
+import 'package:simple_news/models/news.dart';
+import 'package:simple_news/repository/news_repository.dart';
+
+class MockNewsRepository extends Mock implements NewsRepository {}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  group('NewsBloc', () {
+    NewsRepository newsRepository;
+    NewsBloc newsBloc;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    setUp(() {
+      newsRepository = MockNewsRepository();
+      newsBloc = NewsBloc(newsRepository: newsRepository);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    tearDown(() {
+      newsBloc.close();
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('initial state is NewsInitial', () {
+      expect(newsBloc.initialState, NewsInitial());
+    });
+
+    blocTest(
+      'emits 20 news when Fetch is added',
+      build: () async {
+        when(newsRepository.getNews(limit: 20, offset: 0, source: 'all')).thenAnswer((_) => Future.value(List<News>(20)));
+        return newsBloc;
+      },
+      act: (bloc) async => bloc.add(Fetch(source: 'all')),
+      expect: [NewsLoaded(news: List<News>(20))],
+    );
   });
 }

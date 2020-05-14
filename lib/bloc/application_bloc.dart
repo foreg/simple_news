@@ -13,9 +13,14 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
 
   @override
   Stream<ApplicationState> mapEventToState(ApplicationEvent event) async* {
+    final currentState = state;
     if (event is LoadApplication) {
       final prefs = await SharedPreferences.getInstance();
-      yield ApplicationLoaded(prefs: prefs);
+      yield ApplicationLoaded(prefs: prefs, source: prefs.getString('source'));
+    }
+    else if (event is UpdateSettings && currentState is ApplicationLoaded) {
+      currentState.prefs.setString('source', event.source);
+      yield ApplicationLoaded(prefs: currentState.prefs, source: event.source);
     }
   }
 }
